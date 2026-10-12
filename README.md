@@ -1,5 +1,7 @@
 # DatabaseManager
 
+[![CI](https://github.com/echo-fusion/databasemanager/actions/workflows/ci.yml/badge.svg)](https://github.com/echo-fusion/databasemanager/actions/workflows/ci.yml) [![Packagist](https://img.shields.io/packagist/v/echo-fusion/databasemanager.svg)](https://packagist.org/packages/echo-fusion/databasemanager) [![PHP](https://img.shields.io/badge/php-8.1%20%7C%208.2%20%7C%208.3-777bb4.svg)](https://www.php.net) [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
 **DatabaseManager** is a small, readable database layer for the EchoFusion framework. It is built to be **replaced**: your code talks to a tiny contract, and the implementation behind it can be our PDO connection, Doctrine DBAL, or anything else you write, chosen in configuration.
 
 It is also meant to show what happens behind the scenes: the whole package is a few hundred lines you can read in an afternoon.
@@ -12,16 +14,12 @@ your code ──► ConnectionInterface (echo-fusion/contracts)
    (built in)      (optional adapter)
 ```
 
+> Part of [EchoFusion](https://github.com/echo-fusion), a modular PHP framework built from small packages.
+
 ## Installation
 
 ```bash
 composer require echo-fusion/databasemanager
-```
-
-Optional, only for the Doctrine adapter:
-
-```bash
-composer require doctrine/dbal
 ```
 
 ## Requirements
@@ -192,8 +190,6 @@ Implement `ConnectionInterface` (about ten small methods) in a class that takes 
 ```bash
 composer test
 ```
-
-Tests use an in-memory SQLite database.
 
 ## Credits
 
