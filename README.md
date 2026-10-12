@@ -155,7 +155,7 @@ return [
 ];
 ```
 
-Extra PDO attributes go in `'options' => [...]`; use `'dsn' => '...'` instead of the individual parts when you need an exact DSN. PDO is created with exceptions on, associative fetch mode and real prepared statements.
+Extra PDO attributes go in `'options' => [...]`; use `'dsn' => '...'` instead of the individual parts when you need an exact DSN. PDO is created with exceptions on, associative fetch mode and real prepared statements. SQLite connections enforce `FOREIGN KEY` constraints (including `ON DELETE CASCADE`), which SQLite itself leaves off by default; set `'foreign_keys' => false` on a connection to turn that off.
 
 ## Replacing the implementation
 

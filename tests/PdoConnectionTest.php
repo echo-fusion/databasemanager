@@ -27,6 +27,32 @@ final class PdoConnectionTest extends ConnectionContractTestCase
         $connection->getPdo();
     }
 
+    public function testSqliteEnforcesForeignKeysAndCascades(): void
+    {
+        $db = new PdoConnection(['driver' => 'sqlite', 'path' => ':memory:']);
+        $db->execute('CREATE TABLE users (id INTEGER PRIMARY KEY)');
+        $db->execute('CREATE TABLE posts (id INTEGER PRIMARY KEY, user_id INTEGER NOT NULL REFERENCES users (id) ON DELETE CASCADE)');
+        $db->execute('INSERT INTO users (id) VALUES (1)');
+        $db->execute('INSERT INTO posts (id, user_id) VALUES (1, 1)');
+
+        $db->execute('DELETE FROM users WHERE id = 1');
+        $this->assertSame(0, $db->fetchValue('SELECT COUNT(*) FROM posts'), 'the cascade removed the post');
+
+        $this->expectException(DatabaseException::class);
+        $db->execute('INSERT INTO posts (id, user_id) VALUES (2, 99)');   // there is no user 99
+    }
+
+    public function testForeignKeysCanBeSwitchedOff(): void
+    {
+        $db = new PdoConnection(['driver' => 'sqlite', 'path' => ':memory:', 'foreign_keys' => false]);
+        $db->execute('CREATE TABLE users (id INTEGER PRIMARY KEY)');
+        $db->execute('CREATE TABLE posts (id INTEGER PRIMARY KEY, user_id INTEGER NOT NULL REFERENCES users (id))');
+
+        $db->execute('INSERT INTO posts (id, user_id) VALUES (1, 99)');   // accepted, as SQLite does by default
+
+        $this->assertSame(1, $db->fetchValue('SELECT COUNT(*) FROM posts'));
+    }
+
     public function testFromPdoWrapsAnExistingConnection(): void
     {
         $pdo = new PDO('sqlite::memory:');
