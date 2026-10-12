@@ -31,7 +31,8 @@ use function sprintf;
  *
  * Config keys: `driver` (mysql, pgsql, sqlite), `host`, `port`, `dbname`, `user`, `password`,
  * `charset`, `path` (sqlite file or ":memory:"), `dsn` (use instead of the parts above),
- * `options` (extra PDO attributes).
+ * `options` (extra PDO attributes), `foreign_keys` (SQLite only, default true: enforce FOREIGN KEY
+ * constraints; set false for the old SQLite behaviour).
  */
 final class PdoConnection implements ConnectionInterface
 {
@@ -62,6 +63,11 @@ final class PdoConnection implements ConnectionInterface
                     PDO::ATTR_STRINGIFY_FETCHES => false,
                 ],
             );
+
+            // SQLite ignores FOREIGN KEY constraints (and ON DELETE CASCADE) unless this is switched on for each connection
+            if (($config['foreign_keys'] ?? true) !== false && $pdo->getAttribute(PDO::ATTR_DRIVER_NAME) === 'sqlite') {
+                $pdo->exec('PRAGMA foreign_keys = ON');
+            }
 
             return $pdo;
         };
